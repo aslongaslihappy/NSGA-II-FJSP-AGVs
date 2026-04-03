@@ -1,39 +1,42 @@
 # NSGA-II-FJSP-AGVs
 
-A lightweight Python implementation of a multi-objective NSGA-II solver for the Flexible Job Shop Scheduling Problem with Automated Guided Vehicles (FJSP-AGVs).
+A Python implementation of NSGA-II for multi-objective flexible job shop scheduling with AGVs, optimizing makespan and energy consumption.
 
-本项目实现了一个面向 `FJSP-AGVs` 的多目标优化求解器，使用 `NSGA-II` 同时优化：
+This repository provides a lightweight research-oriented solver for the Flexible Job Shop Scheduling Problem with Automated Guided Vehicles (FJSP-AGVs). The current implementation uses NSGA-II to optimize two objectives simultaneously:
 
-- `Makespan`（最大完工时间）
-- `Energy Consumption`（总能耗）
+- `Makespan`
+- `Total energy consumption`
 
-仓库中包含：
+The repository includes:
 
-- 核心算法实现
-- 数据解析与解码器
-- 两套测试数据集
-- 批量实验与 Pareto 前沿记录脚本
-- 部分实验结果示例
+- Core algorithm modules
+- Instance parsers and a schedule decoder
+- Built-in benchmark datasets
+- A batch experiment script for repeated runs
+- Example result files and Pareto plots
 
 ## Features
 
-- 基于 `NSGA-II` 的多目标进化求解框架
-- 三段式染色体编码：工序顺序、机器选择、AGV 选择
-- 支持 `POX` 与 `UX` 交叉算子
-- 支持工序、机器、AGV 三类变异
-- 基于快速非支配排序与拥挤距离的环境选择
-- 同时考虑机器加工能耗、机器空闲能耗、AGV 空载与载货运输能耗
-- 支持单次求解和多次重复实验
+- Multi-objective optimization based on `NSGA-II`
+- Three-part chromosome representation:
+  operation sequence, machine assignment, and AGV assignment
+- `POX` crossover for operation sequencing
+- `UX` crossover for machine and AGV genes
+- Mutation operators for operation, machine, and AGV decisions
+- Fast non-dominated sorting and crowding-distance-based environmental selection
+- Energy modeling for:
+  machine processing, machine idle time, AGV loaded travel, and AGV empty travel
+- Support for both single-run testing and repeated batch experiments
 
 ## Repository Structure
 
 ```text
 NSGA-II-FJSP-AGVs/
-├─ datasets/                 # FJSP-AGVs benchmark datasets
+├─ datasets/
 │  └─ FJSP_AGVs/
 │     ├─ Bilge and Ulusoy/
 │     └─ Brandimarte_Data/
-├─ nsga_fjsp_agvs/           # Core algorithm modules
+├─ nsga_fjsp_agvs/
 │  ├─ NSGA_II.py
 │  ├─ decoder.py
 │  ├─ environment_selection.py
@@ -41,45 +44,45 @@ NSGA-II-FJSP-AGVs/
 │  ├─ parser.py
 │  └─ problem.py
 ├─ utils/
-│  ├─ performance_test.py    # Batch experiment / Pareto statistics
-│  └─ recorder.py            # Pareto front extraction and printing
-├─ results/                  # Saved experiment results
-└─ main.py                   # Default entry point
+│  ├─ performance_test.py
+│  └─ recorder.py
+├─ results/
+└─ main.py
 ```
 
-## Environment
+## Requirements
 
 - Python 3
-- Required: `numpy`
-- Optional: `tqdm`, `matplotlib`
+- Required package: `numpy`
+- Optional packages: `tqdm`, `matplotlib`
 
-安装依赖：
+Install dependencies with:
 
 ```bash
 pip install numpy tqdm matplotlib
 ```
 
-如果你只运行 `main.py`，核心依赖是 `numpy`；`tqdm` 和 `matplotlib` 主要用于 `utils/performance_test.py` 的批量实验与绘图。
+If you only want to run `main.py`, `numpy` is the only required package. `tqdm` and `matplotlib` are mainly used by `utils/performance_test.py` for progress display and plotting.
 
 ## Quick Start
 
-直接运行默认示例：
+Run the default example:
 
 ```bash
 python main.py
 ```
 
-当前默认配置位于 `main.py`：
+The current default configuration in `main.py` is:
 
-- 数据集：`Bilge and Ulusoy`
-- 算例：`Jobset01`
-- 车间布局：`Layout1`
-- 停止条件：`max_fe=10000`
-- 种群规模：`100`
-- 交叉概率：`0.9`
-- 变异概率：`0.15`
+- Dataset: `Bilge and Ulusoy`
+- Instance: `Jobset01`
+- Layout: `Layout1`
+- Stopping criterion: `max_fe = 10000`
+- Population size: `100`
+- Crossover probability: `0.9`
+- Mutation probability: `0.15`
 
-一次实际运行的终端输出示例：
+Example console output from a real run:
 
 ```text
 Stopping criterion: 10000 function evaluations
@@ -89,81 +92,81 @@ Solution 1: makespan = 75.00, energy = 5667.00
 
 ## Batch Experiments
 
-如果你想做重复实验、保存每次运行的 Pareto 前沿，并自动生成 CSV 和图像，可以运行：
+To perform repeated runs, save Pareto history, export CSV files, and generate Pareto plots, run:
 
 ```bash
 python utils/performance_test.py
 ```
 
-该脚本会：
+This script can:
 
-- 重复运行指定数据集多次
-- 保存每次实验的 Pareto 历史
-- 汇总全部非支配解
-- 导出 `csv` 文件
-- 生成 Pareto 散点图
+- Run a selected dataset multiple times
+- Save Pareto-front history for each run
+- Merge Pareto points across runs
+- Export result tables as CSV files
+- Generate scatter plots for Pareto fronts
 
-## Dataset Support
+## Supported Datasets
 
-当前仓库内置了两类数据：
+The repository currently includes two dataset groups:
 
 - `datasets/FJSP_AGVs/Bilge and Ulusoy`
 - `datasets/FJSP_AGVs/Brandimarte_Data`
 
-布局运输时间矩阵与作业数据分开存储，程序会在运行时自动读取：
+Job data and transport-layout data are stored separately and loaded automatically at runtime:
 
-- 作业实例文件：如 `Jobset01.txt`、`Mk01.txt`
-- 布局文件：如 `Layout1.txt`、`Layout.txt`
+- Instance files such as `Jobset01.txt` and `Mk01.txt`
+- Layout files such as `Layout1.txt` and `Layout.txt`
 
 ## Objective Definition
 
-当前实现返回两个优化目标：
+The solver optimizes two objectives:
 
 1. `Makespan`
 2. `Total Energy`
 
-其中总能耗由以下部分组成：
+The total energy value currently includes:
 
-- 机器加工能耗
-- 机器空闲能耗
-- AGV 空载运输能耗
-- AGV 载货运输能耗
+- Machine processing energy
+- Machine idle energy
+- AGV empty-travel energy
+- AGV loaded-travel energy
 
 ## Main Modules
 
-- `nsga_fjsp_agvs/problem.py`：问题定义、个体表示、种群初始化、交叉与变异调度
-- `nsga_fjsp_agvs/decoder.py`：根据染色体计算调度结果与目标值
-- `nsga_fjsp_agvs/NSGA_II.py`：NSGA-II 主流程
-- `nsga_fjsp_agvs/environment_selection.py`：非支配排序与拥挤距离选择
-- `nsga_fjsp_agvs/operators.py`：初始化、交叉与变异算子
-- `utils/performance_test.py`：批量测试、结果统计与绘图
+- `nsga_fjsp_agvs/problem.py`: problem definition, individual creation, initialization, crossover, and mutation flow
+- `nsga_fjsp_agvs/decoder.py`: schedule decoding and objective evaluation
+- `nsga_fjsp_agvs/NSGA_II.py`: NSGA-II main loop
+- `nsga_fjsp_agvs/environment_selection.py`: non-dominated sorting and crowding-distance selection
+- `nsga_fjsp_agvs/operators.py`: initialization, crossover, and mutation operators
+- `utils/performance_test.py`: repeated experiments, statistics, CSV export, and plotting
 
 ## Example Result
 
-仓库中已包含一组示例结果，位于：
+An example result folder is included at:
 
 `results/Brandimarte_Data/Mk01_Layout/`
 
-示例图如下：
+Example plot:
 
 ![Combined Pareto Front](results/Brandimarte_Data/Mk01_Layout/combined_pareto_front.png)
 
-## How To Customize
+## Customization
 
-你可以直接修改 `main.py` 或 `utils/performance_test.py` 中的参数，例如：
+You can directly modify parameters in `main.py` or `utils/performance_test.py`, for example:
 
-- 切换数据集与布局
-- 修改 `max_fe`
-- 修改种群规模 `pop_size`
-- 修改交叉概率 `cr`
-- 修改变异概率 `mu`
-- 调整重复实验次数 `num_runs`
+- Dataset and layout selection
+- `max_fe`
+- Population size `pop_size`
+- Crossover probability `cr`
+- Mutation probability `mu`
+- Number of repeated runs `num_runs`
 
 ## Notes
 
-- 当前仓库适合作为 FJSP-AGVs 与多目标进化算法的研究代码基础版本。
-- 如果你准备公开到 GitHub，建议补充 `LICENSE`、论文引用信息和更系统的实验说明。
+- This repository is suitable as a baseline implementation for research on FJSP-AGVs and multi-objective evolutionary optimization.
+- If you plan to publish this project on GitHub, it is recommended to also add a `LICENSE`, citation information, and a more formal experiment description.
 
 ## Citation
 
-如果这个项目对你的研究有帮助，建议在你的 GitHub 仓库或论文中注明项目来源与改进内容。
+If this repository helps your research, please cite the related paper or mention the project source and your modifications in your publication or repository.
