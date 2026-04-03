@@ -1,0 +1,6 @@
+﻿run_id,makespan,energy,is_non_dominated
+5,155.0,8695.5,True
+1,157.0,8652.0,True
+1,158.0,8631.5,True
+5,159.0,8579.0,True
+1,167.0,8539.0,True
