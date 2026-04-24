@@ -1,21 +1,13 @@
 # NSGA-II-FJSP-AGVs
 
-A Python implementation of NSGA-II for multi-objective flexible job shop scheduling with AGVs, optimizing makespan and energy consumption.
-
-This repository provides a lightweight research-oriented solver for the Flexible Job Shop Scheduling Problem with Automated Guided Vehicles (FJSP-AGVs). The current implementation uses NSGA-II to optimize two objectives simultaneously:
+A Python implementation of NSGA-II for the Flexible Job Shop Scheduling Problem with Automated Guided Vehicles (FJSP-AGVs), with two optimization objectives:
 
 - `Makespan`
 - `Total energy consumption`
 
-The repository includes:
+This repository is intended as a lightweight research baseline. It includes the core evolutionary solver, benchmark instance parsers, schedule decoding, Pareto-front export, Pareto plotting, and complete Gantt-chart generation for the best-`Makespan` Pareto solution.
 
-- Core algorithm modules
-- Instance parsers and a schedule decoder
-- Built-in benchmark datasets
-- A batch experiment script for repeated runs
-- Example result files and Pareto plots
-
-## Features
+## Highlights
 
 - Multi-objective optimization based on `NSGA-II`
 - Three-part chromosome representation:
@@ -26,43 +18,47 @@ The repository includes:
 - Fast non-dominated sorting and crowding-distance-based environmental selection
 - Energy modeling for:
   machine processing, machine idle time, AGV loaded travel, and AGV empty travel
-- Support for both single-run testing and repeated batch experiments
+- Batch experiments with Pareto-history export and Pareto plots
+- Complete Gantt-chart generation after optimization:
+  machine processing, AGV empty travel, and AGV loaded travel
 
 ## Repository Structure
 
 ```text
 NSGA-II-FJSP-AGVs/
-├─ datasets/
-│  └─ FJSP_AGVs/
-│     ├─ Bilge and Ulusoy/
-│     └─ Brandimarte_Data/
-├─ nsga_fjsp_agvs/
-│  ├─ NSGA_II.py
-│  ├─ decoder.py
-│  ├─ environment_selection.py
-│  ├─ operators.py
-│  ├─ parser.py
-│  └─ problem.py
-├─ utils/
-│  ├─ performance_test.py
-│  └─ recorder.py
-├─ results/
-└─ main.py
+|-- datasets/
+|   `-- FJSP_AGVs/
+|       |-- Bilge and Ulusoy/
+|       `-- Brandimarte_Data/
+|-- nsga_fjsp_agvs/
+|   |-- NSGA_II.py
+|   |-- binary_tournament_selection.py
+|   |-- decoder.py
+|   |-- environment_selection.py
+|   |-- operators.py
+|   |-- parser.py
+|   `-- problem.py
+|-- utils/
+|   |-- performance_test.py
+|   `-- recorder.py
+|-- results/
+|-- main.py
+`-- README.md
 ```
 
 ## Requirements
 
-- Python 3
+- Python 3.10+
 - Required package: `numpy`
-- Optional packages: `tqdm`, `matplotlib`
+- Optional packages: `matplotlib`, `tqdm`
 
 Install dependencies with:
 
 ```bash
-pip install numpy tqdm matplotlib
+pip install numpy matplotlib tqdm
 ```
 
-If you only want to run `main.py`, `numpy` is the only required package. `tqdm` and `matplotlib` are mainly used by `utils/performance_test.py` for progress display and plotting.
+If you only want to run the optimizer without plotting, `numpy` is the only required dependency.
 
 ## Quick Start
 
@@ -72,7 +68,7 @@ Run the default example:
 python main.py
 ```
 
-The current default configuration in `main.py` is:
+Current default configuration in `main.py`:
 
 - Dataset: `Bilge and Ulusoy`
 - Instance: `Jobset01`
@@ -82,12 +78,33 @@ The current default configuration in `main.py` is:
 - Crossover probability: `0.9`
 - Mutation probability: `0.15`
 
-Example console output from a real run:
+Typical console output:
 
 ```text
 Stopping criterion: 10000 function evaluations
 Final Pareto front (makespan, energy):
-Solution 1: makespan = 75.00, energy = 5667.00
+Solution 1: makespan = 73.00, energy = 5773.00
+Solution 2: makespan = 74.00, energy = 5694.00
+Solution 3: makespan = 75.00, energy = 5669.00
+Gantt chart saved to: results/Bilge and Ulusoy/Jobset01_Layout1/best_makespan_gantt.png
+```
+
+The exact Pareto front may vary between runs if no random seed is fixed.
+
+## Output Files
+
+After running `main.py`, the solver will:
+
+- Print the final Pareto front in the console
+- Select the individual with the minimum `Makespan` from the final Pareto front
+- Decode that individual again with detailed scheduling information
+- Generate a complete `16:9` Gantt chart including:
+  machine processing, AGV empty travel, and AGV loaded travel
+
+Default output path:
+
+```text
+results/<dataset>/<instance>_<layout>/best_makespan_gantt.png
 ```
 
 ## Batch Experiments
@@ -106,26 +123,34 @@ This script can:
 - Export result tables as CSV files
 - Generate scatter plots for Pareto fronts
 
+Example generated files:
+
+- `all_pareto_points.csv`
+- `final_pareto_front.csv`
+- `pareto_fronts.png`
+- `combined_pareto_front.png`
+- `history/pareto_history_run_XX.csv`
+
 ## Supported Datasets
 
-The repository currently includes two dataset groups:
+The repository currently includes two benchmark groups:
 
 - `datasets/FJSP_AGVs/Bilge and Ulusoy`
 - `datasets/FJSP_AGVs/Brandimarte_Data`
 
-Job data and transport-layout data are stored separately and loaded automatically at runtime:
+Each experiment uses:
 
-- Instance files such as `Jobset01.txt` and `Mk01.txt`
-- Layout files such as `Layout1.txt` and `Layout.txt`
+- An instance file such as `Jobset01.txt` or `Mk01.txt`
+- A transport-layout file such as `Layout1.txt` or `Layout.txt`
 
 ## Objective Definition
 
-The solver optimizes two objectives:
+The solver optimizes:
 
 1. `Makespan`
 2. `Total Energy`
 
-The total energy value currently includes:
+The total energy value includes:
 
 - Machine processing energy
 - Machine idle energy
@@ -134,22 +159,28 @@ The total energy value currently includes:
 
 ## Main Modules
 
-- `nsga_fjsp_agvs/problem.py`: problem definition, individual creation, initialization, crossover, and mutation flow
-- `nsga_fjsp_agvs/decoder.py`: schedule decoding and objective evaluation
+- `nsga_fjsp_agvs/problem.py`: problem definition, individual creation, initialization, crossover, and mutation
+- `nsga_fjsp_agvs/decoder.py`: objective evaluation and detailed schedule decoding
 - `nsga_fjsp_agvs/NSGA_II.py`: NSGA-II main loop
 - `nsga_fjsp_agvs/environment_selection.py`: non-dominated sorting and crowding-distance selection
 - `nsga_fjsp_agvs/operators.py`: initialization, crossover, and mutation operators
-- `utils/performance_test.py`: repeated experiments, statistics, CSV export, and plotting
+- `utils/recorder.py`: Pareto-front reporting and complete Gantt-chart plotting
+- `utils/performance_test.py`: repeated experiments, statistics, CSV export, and Pareto plotting
 
-## Example Result
+## Example Results
 
-An example result folder is included at:
+Example result folders:
 
-`results/Brandimarte_Data/Mk01_Layout/`
+- `results/Bilge and Ulusoy/Jobset01_Layout1/`
+- `results/Brandimarte_Data/Mk01_Layout/`
 
-Example plot:
+Example Pareto plot:
 
 ![Combined Pareto Front](results/Brandimarte_Data/Mk01_Layout/combined_pareto_front.png)
+
+Example Gantt chart:
+
+![Best Makespan Gantt Chart](results/Bilge%20and%20Ulusoy/Jobset01_Layout1/best_makespan_gantt.png)
 
 ## Customization
 
@@ -164,9 +195,9 @@ You can directly modify parameters in `main.py` or `utils/performance_test.py`, 
 
 ## Notes
 
-- This repository is suitable as a baseline implementation for research on FJSP-AGVs and multi-objective evolutionary optimization.
-- If you plan to publish this project on GitHub, it is recommended to also add a `LICENSE`, citation information, and a more formal experiment description.
+- This project is suitable as a compact baseline for research on FJSP-AGVs and multi-objective evolutionary scheduling.
+- If you plan to publish this repository, it is recommended to add a `LICENSE`, citation metadata, and a short description of your experimental settings.
 
 ## Citation
 
-If this repository helps your research, please cite the related paper or mention the project source and your modifications in your publication or repository.
+If this repository helps your research, please cite the related paper or mention this project and your modifications in your publication or repository.

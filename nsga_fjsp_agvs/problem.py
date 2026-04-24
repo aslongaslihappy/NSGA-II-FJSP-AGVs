@@ -45,6 +45,8 @@ class BaseAlgorithm:
     def not_terminated(self, population):
         self._record_history(population)
         self.generation += 1
+        if self.generation % 10 == 0:
+            print(f"Generation {self.generation}") #每10代打印一次当前代数
         return self.problem.fe < self.problem.max_fe
 
     def _record_history(self, population):
