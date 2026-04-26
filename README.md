@@ -22,6 +22,21 @@ This repository is intended as a lightweight research baseline. It includes the 
 - Complete Gantt-chart generation after optimization:
   machine processing, AGV empty travel, and AGV loaded travel
 
+## Example Results
+
+Example result folders:
+
+- `results/Bilge and Ulusoy/Jobset01_Layout1/`
+- `results/Brandimarte_Data/Mk01_Layout/`
+
+Example Pareto plot:
+
+![Combined Pareto Front](results/Brandimarte_Data/Mk01_Layout/combined_pareto_front.png)
+
+Example Gantt chart:
+
+![Best Makespan Gantt Chart](results/Bilge%20and%20Ulusoy/Jobset01_Layout1/best_makespan_gantt.png)
+
 ## Repository Structure
 
 ```text
@@ -166,21 +181,6 @@ The total energy value includes:
 - `nsga_fjsp_agvs/operators.py`: initialization, crossover, and mutation operators
 - `utils/recorder.py`: Pareto-front reporting and complete Gantt-chart plotting
 - `utils/performance_test.py`: repeated experiments, statistics, CSV export, and Pareto plotting
-
-## Example Results
-
-Example result folders:
-
-- `results/Bilge and Ulusoy/Jobset01_Layout1/`
-- `results/Brandimarte_Data/Mk01_Layout/`
-
-Example Pareto plot:
-
-![Combined Pareto Front](results/Brandimarte_Data/Mk01_Layout/combined_pareto_front.png)
-
-Example Gantt chart:
-
-![Best Makespan Gantt Chart](results/Bilge%20and%20Ulusoy/Jobset01_Layout1/best_makespan_gantt.png)
 
 ## Customization
 
