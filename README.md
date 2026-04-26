@@ -1,5 +1,12 @@
 # NSGA-II-FJSP-AGVs
 
+<p align="center">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Algorithm" src="https://img.shields.io/badge/Algorithm-NSGA--II-4B5563">
+  <img alt="Problem" src="https://img.shields.io/badge/Problem-FJSP--AGVs-0F766E">
+  <img alt="Objectives" src="https://img.shields.io/badge/Objectives-Makespan%20%7C%20Energy-B45309">
+</p>
+
 A Python implementation of NSGA-II for the Flexible Job Shop Scheduling Problem with Automated Guided Vehicles (FJSP-AGVs), with two optimization objectives:
 
 - `Makespan`
